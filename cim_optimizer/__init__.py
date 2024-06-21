@@ -14,13 +14,25 @@ represented with or without an external field.
 Code details
 ------------
 """
-import cim_optimizer.solve_Ising # contains class Ising and subclass results, solver
-import cim_optimizer.CIM_helper # contains helper functions for solve_Ising and preprocessing functions
-from cim_optimizer.optimal_params import * # contains optimal hyperparameters for well-known problems
+#import cim_optimizer.solve_Ising # contains class Ising and subclass results, solver
+#import cim_optimizer.CIM_helper # contains helper functions for solve_Ising and preprocessing functions
+#from cim_optimizer.optimal_params import * # contains optimal hyperparameters for well-known problems
+## import all solvers
+#import cim_optimizer.AHC_tuning
+#import cim_optimizer.AHC
+#import cim_optimizer.CAC_tuning
+#import cim_optimizer.CAC
+#import cim_optimizer.extAHC_tuning
+#import cim_optimizer.extAHC
+
+
+from solve_Ising import *# contains class Ising and subclass results, solver
+import CIM_helper # contains helper functions for solve_Ising and preprocessing functions
+from optimal_params import * # contains optimal hyperparameters for well-known problems
 # import all solvers
-import cim_optimizer.AHC_tuning
-import cim_optimizer.AHC
-import cim_optimizer.CAC_tuning
-import cim_optimizer.CAC
-import cim_optimizer.extAHC_tuning
-import cim_optimizer.extAHC
+import AHC_tuning
+import AHC
+import CAC_tuning
+import CAC
+import extAHC_tuning
+import extAHC

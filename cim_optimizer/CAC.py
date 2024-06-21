@@ -18,7 +18,7 @@ def CIM_CAC_GPU(T_time, J, batch_size=1, time_step=0.05, r=None, alpha=3.0, beta
     Attributes
     ----------
     T_time : int
-        Roundtrip number per run, representing time horizon.
+        Roundtrip number per run, representing time horizon. (default 1000)
     J : ndarray
         Ising spin-spin coupling matrix.
     batch_size : int, default=1
@@ -92,15 +92,19 @@ def CIM_CAC_GPU(T_time, J, batch_size=1, time_step=0.05, r=None, alpha=3.0, beta
     J = torch.from_numpy(J)
     J = J.float().to(device)
     N = J.size()[1]
+    #different from plot for AHC, replace all T_time to ticks
+    ticks=int(T_time/time_step)
+    #print(ticks)
+    
     if r == None:
         r = 0.8-(N/220)**2
     #Initialize plot and runtime data arrays.
     xi = torch.zeros(batch_size).to(device)
     t_c = torch.zeros(batch_size).to(device)
     H = torch.zeros(batch_size).to(device)
-    spin_amplitude_trajectory = torch.zeros(batch_size, N, T_time).to(device)
-    error_var_data = torch.zeros(batch_size, N, T_time).to(device)
-    energy_plot_data = torch.zeros(batch_size, T_time).to(device)
+    spin_amplitude_trajectory = torch.zeros(batch_size, N, ticks).to(device)
+    error_var_data = torch.zeros(batch_size, N, ticks).to(device)
+    energy_plot_data = torch.zeros(batch_size, ticks).to(device)
     t_opt = torch.zeros(batch_size).to(device)
     #Initialize Spin-Amplitude Vectors and Auxiliary Variables
     x = 0.001 * torch.rand(batch_size, N).to(device) - 0.0005
@@ -109,13 +113,13 @@ def CIM_CAC_GPU(T_time, J, batch_size=1, time_step=0.05, r=None, alpha=3.0, beta
 
     #Configure ramp schedules.
     if custom_fb_schedule is None:
-        beta = torch.ones(T_time).to(device)*beta
+        beta = torch.ones(ticks).to(device)*beta
     else:
-        beta = custom_fb_schedule(torch.arange(0, T_time).to(device))
+        beta = custom_fb_schedule(torch.arange(0, ticks).to(device))
     if custom_pump_schedule is None:
-        r = torch.ones(T_time).to(device)*r
+        r = torch.ones(ticks).to(device)*r
     else:
-        r = custom_pump_schedule(torch.arange(0, T_time).to(device))
+        r = custom_pump_schedule(torch.arange(0, ticks).to(device))
 
     #Compute initial Ising energy and spin states.
     sig = ((2 * (x > 0) - 1).float()).to(device)
@@ -125,7 +129,8 @@ def CIM_CAC_GPU(T_time, J, batch_size=1, time_step=0.05, r=None, alpha=3.0, beta
     sig_opt = sig
     a = alpha * torch.ones(batch_size).to(device)
     #Simulate Time-Evolution of Spin Amplitudes
-    for t in range(T_time):
+    
+    for t in range(ticks):
         #Save spin states at current iteration.
         x_ = x
         spin_amplitude_trajectory[:, :, t] = x_
@@ -161,7 +166,7 @@ def CIM_CAC_GPU(T_time, J, batch_size=1, time_step=0.05, r=None, alpha=3.0, beta
         t_opt[H < H_opt] = t
         t_c[H < H_opt] = t
         H_opt = torch.minimum(H_opt, H) 
-
+    
     #Parse and Return Solutions
     spin_amplitude_trajectory = spin_amplitude_trajectory.cpu()
     spin_plot_data = 2 * (spin_amplitude_trajectory > 0) - 1
@@ -173,3 +178,5 @@ def CIM_CAC_GPU(T_time, J, batch_size=1, time_step=0.05, r=None, alpha=3.0, beta
     sig_opt = sig_opt.cpu()
     error_var_data = error_var_data.cpu()
     return (sig_opt.numpy(), spin_amplitude_trajectory.numpy(), t, energy_plot_data.numpy(), error_var_data.numpy())
+
+

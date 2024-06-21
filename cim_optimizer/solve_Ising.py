@@ -22,7 +22,8 @@ import bohb.configspace as cs
 from dataclasses import dataclass
 import warnings
 import argparse
-from cim_optimizer import AHC, AHC_tuning, extAHC, extAHC_tuning, CAC, CAC_tuning, CIM_helper
+import AHC, AHC_tuning, extAHC, extAHC_tuning, CAC, CAC_tuning, CIM_helper
+
 
 NoneType = type(None)
 
@@ -682,3 +683,5 @@ class Ising:
 
         def brute_force(self):
             return CIM_helper.brute_force(self.J, self.h)
+
+

@@ -7,7 +7,7 @@
 # This code is licensed under Creative Commons Attribution 4.0 International.
 # https://creativecommons.org/licenses/by/4.0/
 import torch 
-from cim_optimizer import CAC
+import CAC
 import numpy as np
 from bohb import BOHB
 import bohb.configspace as cs
